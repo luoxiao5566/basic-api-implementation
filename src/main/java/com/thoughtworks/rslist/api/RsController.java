@@ -1,21 +1,23 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.RsEvent;
+import com.thoughtworks.rslist.domain.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController
 public class RsController {
     private List<RsEvent> rsList = initRsEventList();
+    private Map<String , User> userMap = new LinkedHashMap<>();
 
     private List<RsEvent> initRsEventList() {
         List<RsEvent> rsEventsList = new ArrayList<>();
-        rsEventsList.add(new RsEvent("第一条事件", "无标签"));
-        rsEventsList.add(new RsEvent("第二条事件", "无标签"));
-        rsEventsList.add(new RsEvent("第三条事件", "无标签"));
+        User user = new User("xyxia","male",19,"a@b.com","18888888888");
+        rsEventsList.add(new RsEvent("第一条事件", "无标签",user));
+        rsEventsList.add(new RsEvent("第二条事件", "无标签",user));
+        rsEventsList.add(new RsEvent("第三条事件", "无标签",user));
         return rsEventsList;
     }
 
@@ -32,9 +34,22 @@ public class RsController {
         }
         return rsList.subList(start - 1, end);
     }
+    @GetMapping("/rs/map")
+    public boolean getOneUser(@RequestParam String name) {
+        if (userMap.containsKey(name)){
+            return true;
+        }
+        return false;
+    }
+
 
     @PostMapping("/rs/event")
-    public void addRsEvent(@RequestBody RsEvent rsEvent) {
+    public void addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
+        String name = rsEvent.getUser().getName();
+        if (userMap.containsKey(name)){
+            rsList.add(rsEvent);
+        }
+        userMap.put(name,rsEvent.getUser());
         rsList.add(rsEvent);
     }
 
@@ -49,13 +64,16 @@ public class RsController {
             event.setEventName(rsEvent.getEventName());
 
         }
+        if (rsEvent.getUser() != null) {
+            event.setUser(rsEvent.getUser());
+        }
 
     }
 
     @DeleteMapping("/rs/delete/{index}")
     public void deleteRsEvent(@PathVariable int index){
         int size = rsList.size();
-        if(index == 0 || index>size){
+        if(index <= 0 || index>size){
             throw new RuntimeException("Subscript out of bounds");
         }
         rsList.remove(index-1);
