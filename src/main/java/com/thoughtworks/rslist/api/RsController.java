@@ -1,16 +1,27 @@
 package com.thoughtworks.rslist.api;
 
+
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import javax.validation.Valid;
 import java.util.*;
 
 @RestController
 public class RsController {
     private List<RsEvent> rsList = initRsEventList();
-    private Map<String , User> userMap = new LinkedHashMap<>();
+    private Map<String , User> userMap = initRsEventMap();
+
+    private Map<String, User> initRsEventMap() {
+        Map<String,User> rsEventsMap = new LinkedHashMap<>();
+        User user = new User("xyxia","male",19,"a@b.com","18888888888");
+        rsEventsMap.put(user.getName(),user);
+        return rsEventsMap;
+    }
+
 
     private List<RsEvent> initRsEventList() {
         List<RsEvent> rsEventsList = new ArrayList<>();
@@ -22,39 +33,56 @@ public class RsController {
     }
 
     @GetMapping("/rs/{index}")
-    public RsEvent getOneRsEvent(@PathVariable int index) {
-        return rsList.get(index - 1);
+    public ResponseEntity getOneRsEvent(@PathVariable int index) {
+        return ResponseEntity.ok(rsList.get(index - 1));
     }
 
     @GetMapping("/rs/list")
-    public List<RsEvent> getRsEventBetween(@RequestParam(required = false) Integer start
+    public ResponseEntity getRsEventBetween(@RequestParam(required = false) Integer start
             , @RequestParam(required = false) Integer end) {
         if (start == null || end == null) {
-            return rsList;
+            return ResponseEntity.ok(rsList);
         }
-        return rsList.subList(start - 1, end);
+        return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
     @GetMapping("/rs/map")
-    public boolean getOneUser(@RequestParam String name) {
+    public ResponseEntity detectUser(@RequestParam String name) {
         if (userMap.containsKey(name)){
-            return true;
+            return ResponseEntity.ok(true);
         }
-        return false;
+        return ResponseEntity.ok(false);
     }
 
+    @GetMapping("/users")
+    public ResponseEntity getUser(){
+        List<User> tempList = new ArrayList<>();
+        Iterator iterator = userMap.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry entry = (Map.Entry) iterator.next();
+            if (entry.getValue() instanceof User){
+                User user = (User) entry.getValue();
+                tempList.add(user);
+            }
+
+        }
+        return ResponseEntity.ok(tempList);
+    }
 
     @PostMapping("/rs/event")
-    public void addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
+    public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
         String name = rsEvent.getUser().getName();
         if (userMap.containsKey(name)){
             rsList.add(rsEvent);
         }
         userMap.put(name,rsEvent.getUser());
         rsList.add(rsEvent);
+        int temp = rsList.size();
+        String index = ""+temp;
+        return ResponseEntity.created(null).header("index",index).build();
     }
 
     @PatchMapping("/rs/patch")
-    public void modifyRsEvent(@RequestParam int index,@RequestBody RsEvent rsEvent) {
+    public ResponseEntity modifyRsEvent(@RequestParam int index,@RequestBody RsEvent rsEvent) {
         RsEvent event =rsList.get(index-1);
 
         if (rsEvent.getKeyWord() != null) {
@@ -67,16 +95,18 @@ public class RsController {
         if (rsEvent.getUser() != null) {
             event.setUser(rsEvent.getUser());
         }
+        return ResponseEntity.ok(null);
 
     }
 
     @DeleteMapping("/rs/delete/{index}")
-    public void deleteRsEvent(@PathVariable int index){
+    public ResponseEntity deleteRsEvent(@PathVariable int index){
         int size = rsList.size();
         if(index <= 0 || index>size){
             throw new RuntimeException("Subscript out of bounds");
         }
         rsList.remove(index-1);
+        return ResponseEntity.ok(null);
     }
 
 }
