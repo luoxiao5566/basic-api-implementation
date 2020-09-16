@@ -3,7 +3,10 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.exception.Error;
+import com.thoughtworks.rslist.exception.RsEventNotVaildException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.parser.Entity;
@@ -34,12 +37,18 @@ public class RsController {
 
     @GetMapping("/rs/{index}")
     public ResponseEntity getOneRsEvent(@PathVariable int index) {
+        if (index <= 0 || index > rsList.size()){
+            throw new RsEventNotVaildException("invalid index");
+        }
         return ResponseEntity.ok(rsList.get(index - 1));
     }
 
     @GetMapping("/rs/list")
     public ResponseEntity getRsEventBetween(@RequestParam(required = false) Integer start
             , @RequestParam(required = false) Integer end) {
+        if (start <=0 || end > rsList.size() || start > end){
+            throw new RsEventNotVaildException("invalid request param");
+        }
         if (start == null || end == null) {
             return ResponseEntity.ok(rsList);
         }
@@ -109,4 +118,16 @@ public class RsController {
         return ResponseEntity.ok(null);
     }
 
+    @ExceptionHandler({RsEventNotVaildException.class, MethodArgumentNotValidException.class})
+    public ResponseEntity rsExceptionHandler(Exception e){
+        String errorMessage;
+        if (e instanceof MethodArgumentNotValidException){
+            errorMessage = "invalid param";
+        }else {
+            errorMessage = e.getMessage();
+        }
+        Error error = new Error();
+        error.setError(errorMessage);
+        return ResponseEntity.badRequest().body(error);
+    }
 }

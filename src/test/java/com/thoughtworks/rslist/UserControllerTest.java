@@ -56,6 +56,7 @@ public class UserControllerTest {
         String jsonString = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+
     }
 
     @Test
@@ -87,5 +88,17 @@ public class UserControllerTest {
         mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public  void should_throw_user_method_argument_not_valid_exception() throws Exception {
+        User user = new User("xyxiaxxxxxx","male",19,"a@b.com","18888888888");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error",is("invalid user")));
+
+    }
+
 
 }

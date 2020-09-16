@@ -288,4 +288,28 @@ public class RsControllerTest {
                 .andExpect(jsonPath("$[0].email",is("a@b.com")))
                 .andExpect(status().isOk());
     }
+    @Test
+    public void should_throw_rs_event_not_valid_exception() throws Exception {
+        mockMvc.perform(get("/rs/0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error",is("invalid index")));
+    }
+
+    @Test
+    public void should_throw_method_argument_not_valid_exception() throws Exception {
+        User user = new User("xyxiaxxxxxx","male",19,"a@b.com","18888888888");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了","经济",user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error",is("invalid param")));
+    }
+
+    @Test
+    public void should_throw_get_rs_event_between_not_valid_exception() throws Exception {
+        mockMvc.perform(get("/rs/list?start=0&end=2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error",is("invalid request param")));
+    }
 }
