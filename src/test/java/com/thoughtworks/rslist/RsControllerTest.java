@@ -1,5 +1,7 @@
 package com.thoughtworks.rslist;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.domain.RsEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -96,7 +98,10 @@ public class RsControllerTest {
 
     @Test
     public void should_modify_rs_event() throws Exception {
-        mockMvc.perform(put("/rs/put?index=1&eventName=第五条事件&keyWord=无标签1"))
+        RsEvent rsEvent = new RsEvent("第五条事件","无标签1");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(patch("/rs/patch?index=1").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/1"))
                 .andExpect(jsonPath("$.eventName", is("第五条事件")))
@@ -106,7 +111,10 @@ public class RsControllerTest {
 
     @Test
     public void should_modify_rs2_event() throws Exception {
-        mockMvc.perform(put("/rs/put?index=1&eventName=第五条事件"))
+        RsEvent rsEvent = new RsEvent("第五条事件",null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(patch("/rs/patch?index=1").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/1"))
                 .andExpect(jsonPath("$.eventName", is("第五条事件")))
@@ -116,7 +124,10 @@ public class RsControllerTest {
 
     @Test
     public void should_modify_rs3_event() throws Exception {
-        mockMvc.perform(put("/rs/put?index=1&keyWord=无标签1"))
+        RsEvent rsEvent = new RsEvent(null,"无标签1");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(patch("/rs/patch?index=1").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/1"))
                 .andExpect(jsonPath("$.eventName", is("第一条事件")))

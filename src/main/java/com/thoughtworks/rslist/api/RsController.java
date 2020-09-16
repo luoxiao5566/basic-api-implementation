@@ -38,16 +38,15 @@ public class RsController {
         rsList.add(rsEvent);
     }
 
-    @PutMapping("/rs/put")
-    public void modifyRsEvent(@RequestParam int index, @RequestParam(required = false) String eventName
-            , @RequestParam(required = false) String keyWord) {
+    @PatchMapping("/rs/patch")
+    public void modifyRsEvent(@RequestParam int index,@RequestBody RsEvent rsEvent) {
         RsEvent event =rsList.get(index-1);
 
-        if (keyWord != null) {
-            event.setKeyWord(keyWord);
+        if (rsEvent.getKeyWord() != null) {
+            event.setKeyWord(rsEvent.getKeyWord());
         }
-        if (eventName != null) {
-            event.setEventName(eventName);
+        if (rsEvent.getEventName() != null) {
+            event.setEventName(rsEvent.getEventName());
 
         }
 
