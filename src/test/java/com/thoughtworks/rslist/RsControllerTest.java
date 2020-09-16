@@ -105,6 +105,26 @@ public class RsControllerTest {
     }
 
     @Test
+    public void should_modify_rs2_event() throws Exception {
+        mockMvc.perform(put("/rs/put?index=1&eventName=第五条事件"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/1"))
+                .andExpect(jsonPath("$.eventName", is("第五条事件")))
+                .andExpect(jsonPath("$.keyWord", is("无标签")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void should_modify_rs3_event() throws Exception {
+        mockMvc.perform(put("/rs/put?index=1&keyWord=无标签1"))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/1"))
+                .andExpect(jsonPath("$.eventName", is("第一条事件")))
+                .andExpect(jsonPath("$.keyWord", is("无标签1")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void should_delete_rs_event() throws Exception {
         mockMvc.perform(delete("/rs/delete/1")).andExpect(status().isOk());
         mockMvc.perform(get("/rs/list"))

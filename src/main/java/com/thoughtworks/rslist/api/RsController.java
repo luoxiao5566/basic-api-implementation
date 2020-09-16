@@ -41,25 +41,25 @@ public class RsController {
     @PutMapping("/rs/put")
     public void modifyRsEvent(@RequestParam int index, @RequestParam(required = false) String eventName
             , @RequestParam(required = false) String keyWord) {
-        if (eventName != null && keyWord != null) {
-            rsList.get(index - 1).setEventName(eventName);
-            rsList.get(index - 1).setKeyWord(keyWord);
-            return;
+        RsEvent event =rsList.get(index-1);
+
+        if (keyWord != null) {
+            event.setKeyWord(keyWord);
         }
-        if (eventName == null && keyWord != null) {
-            rsList.get(index - 1).setKeyWord(keyWord);
-            return;
+        if (eventName != null) {
+            event.setEventName(eventName);
+
         }
-        if (eventName != null && keyWord == null) {
-            rsList.get(index - 1).setEventName(eventName);
-            return;
-        }
-        throw new RuntimeException("No changes have been made");
+
     }
 
     @DeleteMapping("/rs/delete/{index}")
     public void deleteRsEvent(@PathVariable int index){
-      rsList.remove(index-1);
+        int size = rsList.size();
+        if(index == 0 || index>size){
+            throw new RuntimeException("Subscript out of bounds");
+        }
+        rsList.remove(index-1);
     }
 
 }
