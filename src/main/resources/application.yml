@@ -1,1 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/rssystem
+    username: root
+    password: 726412
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+
 
