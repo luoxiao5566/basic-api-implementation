@@ -81,6 +81,8 @@ public class RsController {
     public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
         String name = rsEvent.getUser().getName();
         if (userMap.containsKey(name)){
+            User user = userMap.get(name);
+            rsEvent.setUser(user);
             rsList.add(rsEvent);
         }
         userMap.put(name,rsEvent.getUser());
