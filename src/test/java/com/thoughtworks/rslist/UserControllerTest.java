@@ -135,8 +135,7 @@ public class UserControllerTest {
         mockMvc.perform(delete("/user/delete?id=1"))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/user?id=1"))
-                .andExpect(content().string(""))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 
 

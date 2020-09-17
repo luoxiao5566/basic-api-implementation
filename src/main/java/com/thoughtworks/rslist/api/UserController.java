@@ -23,7 +23,7 @@ public class UserController {
     UserRepository userRepository;
 
     @PostMapping("/user")
-    public void adduser(@RequestBody @Valid User user){
+    public ResponseEntity adduser(@RequestBody @Valid User user){
         UserPo userPo = new UserPo();
         userPo.setName(user.getName());
         userPo.setGender(user.getGender());
@@ -32,12 +32,17 @@ public class UserController {
         userPo.setPhone(user.getPhone());
         userPo.setVoteNum(user.getVoteNum());
         userRepository.save(userPo);
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/user")
-    public UserPo getUser(@RequestParam Integer id) {
+    public ResponseEntity getUser(@RequestParam Integer id) {
+
         Optional<UserPo> byId = userRepository.findById(id);
-        return byId.isPresent()?byId.get():null;
+        if (!byId.isPresent()){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(byId.get());
     }
     @DeleteMapping("/user/delete")
     public void deleteUser(@RequestParam Integer id){
