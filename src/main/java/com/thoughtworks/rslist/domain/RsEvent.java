@@ -12,26 +12,23 @@ public class RsEvent {
     @NotNull
     private  String keyWord;
     @NotNull
-    @Valid
-    private  User user;
+    private  int userId;
 
     public RsEvent() {
     }
 
-    public RsEvent(String eventName, String keyWord, User user) {
+    public RsEvent(@NotNull String eventName, @NotNull String keyWord, @NotNull @Valid int userId) {
         this.eventName = eventName;
         this.keyWord = keyWord;
-        this.user = user;
+        this.userId = userId;
     }
 
-
-    public User getUser() {
-        return user;
+    public int getUserId() {
+        return userId;
     }
 
-
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getEventName() {

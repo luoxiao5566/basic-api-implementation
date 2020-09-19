@@ -5,6 +5,11 @@ import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.Error;
 import com.thoughtworks.rslist.exception.RsEventNotVaildException;
+import com.thoughtworks.rslist.po.RsEventPo;
+import com.thoughtworks.rslist.po.UserPo;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +23,11 @@ public class RsController {
     private List<RsEvent> rsList = initRsEventList();
     private Map<String , User> userMap = initRsEventMap();
 
+    @Autowired
+    RsEventRepository rsEventRepository;
+    @Autowired
+    UserRepository userRepository;
+
     private Map<String, User> initRsEventMap() {
         Map<String,User> rsEventsMap = new LinkedHashMap<>();
         User user = new User("xyxia","male",19,"a@b.com","18888888888");
@@ -29,9 +39,9 @@ public class RsController {
     private List<RsEvent> initRsEventList() {
         List<RsEvent> rsEventsList = new ArrayList<>();
         User user = new User("xyxia","male",19,"a@b.com","18888888888");
-        rsEventsList.add(new RsEvent("第一条事件", "无标签",user));
-        rsEventsList.add(new RsEvent("第二条事件", "无标签",user));
-        rsEventsList.add(new RsEvent("第三条事件", "无标签",user));
+        rsEventsList.add(new RsEvent("第一条事件", "无标签",1));
+        rsEventsList.add(new RsEvent("第二条事件", "无标签",1));
+        rsEventsList.add(new RsEvent("第三条事件", "无标签",1));
         return rsEventsList;
     }
 
@@ -79,15 +89,14 @@ public class RsController {
 
     @PostMapping("/rs/event")
     public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
-        String name = rsEvent.getUser().getName();
-        if (userMap.containsKey(name)){
-            User user = userMap.get(name);
-            rsEvent.setUser(user);
-            rsList.add(rsEvent);
+        Optional<UserPo> userPo = userRepository.findById(rsEvent.getUserId());
+        if (!userPo.isPresent()){
+            return ResponseEntity.badRequest().build();
         }
-        userMap.put(name,rsEvent.getUser());
-        rsList.add(rsEvent);
-        int temp = rsList.size();
+        RsEventPo rsEventPo = RsEventPo.builder().keyWord(rsEvent.getKeyWord()).eventName(rsEvent.getEventName())
+                .userPo(userPo.get()).build();
+        rsEventRepository.save(rsEventPo);
+        int temp = rsEventPo.getId();
         String index = ""+temp;
         return ResponseEntity.created(null).header("index",index).build();
     }
@@ -103,9 +112,9 @@ public class RsController {
             event.setEventName(rsEvent.getEventName());
 
         }
-        if (rsEvent.getUser() != null) {
+        /*if (rsEvent.getUser() != null) {
             event.setUser(rsEvent.getUser());
-        }
+        }*/
         return ResponseEntity.ok(null);
 
     }

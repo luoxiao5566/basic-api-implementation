@@ -4,9 +4,11 @@ import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.Error;
 import com.thoughtworks.rslist.exception.RsEventNotVaildException;
 import com.thoughtworks.rslist.po.UserPo;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +24,11 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    RsEventRepository rsEventRepository;
+
     @PostMapping("/user")
-    public void adduser(@RequestBody @Valid User user){
+    public ResponseEntity adduser(@RequestBody @Valid User user){
         UserPo userPo = new UserPo();
         userPo.setName(user.getName());
         userPo.setGender(user.getGender());
@@ -31,18 +36,24 @@ public class UserController {
         userPo.setEmail(user.getEmail());
         userPo.setPhone(user.getPhone());
         userPo.setVoteNum(user.getVoteNum());
-        userRepository.save(userPo);
+        return ResponseEntity.ok(userRepository.save(userPo));
     }
 
     @GetMapping("/user")
-    public UserPo getUser(@RequestParam Integer id) {
-        Optional<UserPo> byId = userRepository.findById(id);
-        return byId.isPresent()?byId.get():null;
+    public ResponseEntity getUser(@RequestParam Integer id) {
+        Optional<UserPo> userPo = userRepository.findById(id);
+        if (!userPo.isPresent()){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(userPo.get());
     }
-    @DeleteMapping("/user/delete")
-    public void deleteUser(@RequestParam Integer id){
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity deleteUser(@PathVariable int id){
         userRepository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
+
 
     @ExceptionHandler({RsEventNotVaildException.class, MethodArgumentNotValidException.class})
     public ResponseEntity rsExceptionHandler(Exception e){

@@ -2,12 +2,11 @@ package com.thoughtworks.rslist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.po.RsEventPo;
 import com.thoughtworks.rslist.po.UserPo;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
 
 import java.util.List;
 
@@ -37,8 +37,16 @@ public class UserControllerTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    RsEventRepository rsEventRepository;
+
+    @BeforeEach
+    void setUp(){
+        userRepository.deleteAll();
+        rsEventRepository.deleteAll();
+    }
+
     @Test
-    @Order(1)
     public void should_register_user() throws Exception {
         User user = new User("idolice", "male", 19, "a@b.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -61,7 +69,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(2)
     public void name_should_less_than_8() throws Exception {
         User user = new User("xyxiaxxxx", "male", 19, "a@b.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -72,7 +79,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(3)
     public void age_should_between_18_and_100() throws Exception {
         User user = new User("xyxia", "male", 15, "a@b.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -82,7 +88,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(5)
     public void email_should_suit_format() throws Exception {
         User user = new User("xyxia", "male", 19, "ab.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -92,7 +97,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(5)
     public void phone_should_suit_format() throws Exception {
         User user = new User("xyxia", "male", 19, "a@b.com", "188888888881");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -118,25 +122,28 @@ public class UserControllerTest {
         String jsonString = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/user?id=1"))
+        List<UserPo> all = userRepository.findAll();
+        int temp = all.get(0).getId();
+        mockMvc.perform(get("/user?id=3"))
                 .andExpect(jsonPath("$.name",is("idolice")))
                 .andExpect(jsonPath("$.age",is(19)))
                 .andExpect(jsonPath("$.email",is("a@b.com")))
                 .andExpect(status().isOk());
     }
 
+
+
     @Test
-    public void should_delete_user_by_id() throws Exception {
-        User user = new User("idolice", "male", 19, "a@b.com", "18888888888");
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        mockMvc.perform(delete("/user/delete?id=1"))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/user?id=1"))
-                .andExpect(content().string(""))
-                .andExpect(status().isOk());
+    public void should_delete_user() throws Exception {
+        UserPo userPo = UserPo.builder().voteNum(10).phone("19999999999").name("daiyu").age(20).gender("male")
+                .email("a@b.com").build();
+        userRepository.save(userPo);
+        RsEventPo rsEventPo = RsEventPo.builder().keyWord("经济")
+                .eventName("涨工资了").userPo(userPo).build();
+        rsEventRepository.save(rsEventPo);
+        mockMvc.perform(delete("/user/{id}",userPo.getId())).andExpect(status().isOk());
+        assertEquals(0,userRepository.findAll().size());
+        assertEquals(0,rsEventRepository.findAll().size());
     }
 
 
