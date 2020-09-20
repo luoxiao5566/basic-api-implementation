@@ -50,6 +50,7 @@ public class RsControllerTest {
     }
 
     @Test
+    @Order(1)
     public void should_get_re_event_list() throws Exception {
         UserPo saveUser1 = userRepository.save(UserPo.builder().name("xiaowng2").age(18).phone("18888888888")
                 .email("a@b.com").gender("male").voteNum(10).build());
@@ -67,6 +68,7 @@ public class RsControllerTest {
     }
 
     @Test
+    @Order(2)
     public void should_get_one_re_event() throws Exception {
         mockMvc.perform(get("/rs/2"))
                 .andExpect(jsonPath("$.eventName", is("老社畜了")))
@@ -75,6 +77,7 @@ public class RsControllerTest {
     }
 
     @Test
+    @Order(3)
     public void should_get_rs_re_between() throws Exception {
         UserPo saveUser1 = userRepository.save(UserPo.builder().name("xiaowng2").age(18).phone("18888888888")
                 .email("a@b.com").gender("male").voteNum(10).build());
@@ -108,6 +111,7 @@ public class RsControllerTest {
     }
 
     @Test
+    @Order(4)
     public void should_add_rs_event_when_user_exist() throws Exception {
         UserPo saveUser = userRepository.save(UserPo.builder().name("chenhui").age(13).phone("18888888888")
                 .email("a@b.com").gender("female").voteNum(10).build());
@@ -124,6 +128,7 @@ public class RsControllerTest {
         assertEquals(saveUser.getId(),all.get(0).getUserPo().getId());
     }
     @Test
+    @Order(5)
     public void should_add_rs_event_when_user_not_exist() throws Exception {
         RsEvent rsEvent = new RsEvent("猪肉涨价了","经济",100);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -132,6 +137,7 @@ public class RsControllerTest {
                 .andExpect(status().isBadRequest());
     }
     @Test
+    @Order(6)
     public void should_modify_rs_event() throws Exception {
         RsEvent newRsEvent = new RsEvent("新社畜感觉很难受","娱乐1",1);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -151,6 +157,7 @@ public class RsControllerTest {
     }
 
     @Test
+    @Order(7)
     public void should_modify_rs2_event() throws Exception {
         RsEvent newRsEvent = new RsEvent("新社畜感觉很难受",null,1);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -168,6 +175,7 @@ public class RsControllerTest {
     }
 
     @Test
+    @Order(8)
     public void should_modify_rs3_event() throws Exception {
         RsEvent newRsEvent = new RsEvent(null,"娱乐1",1);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -184,6 +192,7 @@ public class RsControllerTest {
     }
 
     @Test
+    @Order(9)
     public void should_delete_rs_event() throws Exception {
         UserPo saveUser1 = userRepository.save(UserPo.builder().name("xiaowng2").age(18).phone("18888888888")
                 .email("a@b.com").gender("male").voteNum(10).build());
@@ -199,17 +208,9 @@ public class RsControllerTest {
 
 
     }
-    @Test
-    public void should_add_rs_event_and_user() throws Exception {
-
-    }
 
     @Test
-    public void should_add_rs_event_and_user_when_user_not_exist() throws Exception {
-
-    }
-
-    @Test
+    @Order(10)
     public void eventName_should_suit_format() throws Exception {
         User user = new User("xiaowang","male",20,"c@b.com","18888888889");
         RsEvent rsEvent = new RsEvent(null,"娱乐",1);
@@ -219,6 +220,7 @@ public class RsControllerTest {
                 .andExpect(status().isBadRequest());
     }
     @Test
+    @Order(11)
     public void keyWord_should_suit_format() throws Exception {
         User user = new User("xiaowang","male",20,"c@b.com","18888888889");
         RsEvent rsEvent = new RsEvent("都是老社畜了", null,1);
@@ -228,6 +230,7 @@ public class RsControllerTest {
                 .andExpect(status().isBadRequest());
     }
     @Test
+    @Order(12)
     public void user_should_suit_format() throws Exception {
         User user = new User("xiaowang","male",20,"c@b.com","18888888889");
         RsEvent rsEvent = new RsEvent("都是老社畜了", "娱乐",1);
@@ -237,55 +240,7 @@ public class RsControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    public void name_should_less_than_8() throws Exception {
-        User user = new User("xiaowangxxx","male",20,"c@b.com","18888888889");
-        RsEvent rsEvent = new RsEvent("都是老社畜了", "娱乐",1);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void age_should_between_18_and_100() throws Exception {
-        User user = new User("xiaowang","male",12,"c@b.com","18888888889");
-        RsEvent rsEvent = new RsEvent("都是老社畜了", "娱乐",1);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void email_should_suit_format() throws Exception {
-        User user = new User("xiaowang","male",20,"cb.com","18888888889");
-        RsEvent rsEvent = new RsEvent("都是老社畜了", "娱乐",1);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void phone_should_suit_format() throws Exception {
-        User user = new User("xiaowang","male",20,"c@b.com","1888888888966");
-        RsEvent rsEvent = new RsEvent("都是老社畜了", "娱乐",1);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-    @Test
-    public void should_get_user_list() throws Exception {
-
-    }
-    @Test
-    public void should_throw_rs_event_not_valid_exception() throws Exception {
-
-    }
-
-    @Test
+    /*@Test
     public void should_throw_method_argument_not_valid_exception() throws Exception {
         User user = new User("xyxiaxxxxxx","male",19,"a@b.com","18888888888");
         RsEvent rsEvent = new RsEvent("猪肉涨价了","经济",1);
@@ -294,9 +249,10 @@ public class RsControllerTest {
         mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error",is("invalid param")));
-    }
+    }*/
 
     @Test
+    @Order(13)
     public void should_throw_get_rs_event_between_not_valid_exception() throws Exception {
         mockMvc.perform(get("/rs/list?start=0&end=2"))
                 .andExpect(status().isBadRequest())
@@ -304,6 +260,7 @@ public class RsControllerTest {
     }
 
     @Test
+    @Order(14)
     public void should_vote_rs_event() throws Exception{
         UserPo saveUser = userRepository.save(UserPo.builder().name("xiaowng").age(18).phone("18888888888")
                 .email("a@b.com").gender("male").voteNum(10).build());
