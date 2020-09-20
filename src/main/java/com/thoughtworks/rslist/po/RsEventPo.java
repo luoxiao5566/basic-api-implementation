@@ -27,7 +27,6 @@ public class RsEventPo {
     @ManyToOne
     private UserPo userPo;
 
-    @OneToMany
-    private List<VotePo> votePos;
+
 
 }

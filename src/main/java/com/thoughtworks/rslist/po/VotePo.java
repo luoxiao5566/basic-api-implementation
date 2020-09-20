@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,16 +21,14 @@ public class VotePo {
     @Id
     @GeneratedValue
     private int id;
-
     private String localDateTime;
-
     protected int num;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JsonIgnore
     private UserPo userPo;
 
     @ManyToOne
-    @JoinColumn(name = "rs_event_id")
+    @JsonIgnore
     private RsEventPo rsEventPo;
 }

@@ -36,30 +36,18 @@ public class UserController {
         userPo.setEmail(user.getEmail());
         userPo.setPhone(user.getPhone());
         userPo.setVoteNum(user.getVoteNum());
-<<<<<<< HEAD
-        userRepository.save(userPo);
-        return ResponseEntity.ok(null);
-=======
+
         return ResponseEntity.ok(userRepository.save(userPo));
->>>>>>> jpa-2
     }
 
     @GetMapping("/user")
     public ResponseEntity getUser(@RequestParam Integer id) {
-<<<<<<< HEAD
-
-        Optional<UserPo> byId = userRepository.findById(id);
-        if (!byId.isPresent()){
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(byId.get());
-=======
         Optional<UserPo> userPo = userRepository.findById(id);
         if (!userPo.isPresent()){
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(userPo.get());
->>>>>>> jpa-2
+
     }
 
     @DeleteMapping("/user/{id}")
