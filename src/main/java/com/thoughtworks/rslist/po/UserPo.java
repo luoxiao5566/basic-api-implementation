@@ -30,6 +30,11 @@ public class UserPo {
     @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "userPo")
     private List<RsEventPo> rsEventPos;
 
+    @OneToMany
+    private List<VotePo> votePos;
+
+
+
     public int getId() {
         return id;
     }
