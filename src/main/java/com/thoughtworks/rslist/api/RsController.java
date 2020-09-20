@@ -38,7 +38,9 @@ public class RsController {
         if (!rsEventPo.isPresent()){
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(rsEventPo.get());
+        RsEvent rsEvent = RsEvent.builder().eventName(rsEventPo.get().getEventName())
+                .keyWord(rsEventPo.get().getKeyWord()).userId(rsEventPo.get().getUserPo().getId()).build();
+        return ResponseEntity.ok(rsEvent);
     }
 
     @GetMapping("/rs/list")
@@ -49,11 +51,11 @@ public class RsController {
                 item -> RsEvent.builder().eventName(item.getEventName()).keyWord(item.getKeyWord())
                         .userId(item.getUserPo().getId()).build()
         ).collect(Collectors.toList());
-        if (start <= 0 || end > rsEvents.size() || start > end){
-            throw new RsEventNotVaildException("invalid request param");
-        }
         if (start == null || end == null) {
             return ResponseEntity.ok(rsEvents);
+        }
+        if (start <= 0 || end > rsEvents.size() || start > end){
+            throw new RsEventNotVaildException("invalid request param");
         }
 
         return ResponseEntity.ok(rsEvents.subList(start - 1, end));
@@ -67,6 +69,7 @@ public class RsController {
         if (!userPo.isPresent() ){
             return ResponseEntity.badRequest().build();
         }
+        @Valid
         RsEventPo rsEventPo = RsEventPo.builder().keyWord(rsEvent.getKeyWord()).eventName(rsEvent.getEventName())
                 .userPo(userPo.get()).build();
         RsEventPo saveRsEvent = rsEventRepository.save(rsEventPo);

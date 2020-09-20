@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import java.util.List;
 
 @Entity
@@ -22,6 +23,7 @@ public class RsEventPo {
     private String eventName;
     private String keyWord;
     private int voteNum;
+    @Valid
     @ManyToOne
     private UserPo userPo;
 
