@@ -23,7 +23,7 @@ public class VoteController {
 
     @Autowired
     VoteRepository voteRepository;
-
+/*
     @GetMapping("/voteRecord")
     public ResponseEntity<List<Vote>> getVoteRecord(@RequestParam int userId,@RequestParam int rsEventId,
                                                     @RequestParam int pageIndex){
@@ -61,5 +61,5 @@ public class VoteController {
                         .voteNum(item.getNum()).build()
         ).collect(Collectors.toList());
         return ResponseEntity.ok(all);
-    }
+    }*/
 }

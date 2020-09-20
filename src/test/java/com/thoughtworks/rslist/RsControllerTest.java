@@ -275,9 +275,9 @@ public class RsControllerTest {
                 .content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         List<RsEventPo> rsEventAll = rsEventRepository.findAll();
-        assertEquals(5,rsEventAll.get(0).getVoteNum());
+        assertEquals(5,rsEventAll.get(1).getVoteNum());
         List<UserPo> userPoAll = userRepository.findAll();
-        assertEquals(5,userPoAll.get(0).getVoteNum());
+        assertEquals(5,userPoAll.get(1).getVoteNum());
 
     }
 

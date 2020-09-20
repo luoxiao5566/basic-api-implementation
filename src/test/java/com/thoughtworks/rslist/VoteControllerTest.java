@@ -42,7 +42,7 @@ public class VoteControllerTest {
     UserPo userPo;
     RsEventPo rsEventPo;
 
-    @BeforeEach
+    /*@BeforeEach
     void setUp(){
         userRepository.deleteAll();
         rsEventRepository.deleteAll();
@@ -68,6 +68,6 @@ public class VoteControllerTest {
                 .andExpect(jsonPath("$[0].voteNum",is(5)))
                 .andExpect(status().isOk());
     }
-
+*/
 
 }

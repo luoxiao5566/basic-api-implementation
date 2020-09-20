@@ -15,9 +15,9 @@ public interface VoteRepository extends PagingAndSortingRepository<VotePo,Intege
     @Override
     List<VotePo> findAll();
 
-    @Query("select v from VotePo v where v.user.id = :userId and v.rsEvent.id = :rsEventId")
+    /*@Query("select v from VotePo v where v.user.id = :userId and v.rsEvent.id = :rsEventId")
     List<VotePo> findByUserIdAndRsEventId(int userId, int rsEventId, Pageable pageable);
 
     @Query("select v from VotePo v where v.localDateTime >= :startTime and v.localDateTime <= :endTime")
-    List<VotePo> myLocalDateTime(String startTime, String endTime);
+    List<VotePo> myLocalDateTime(String startTime, String endTime);*/
 }

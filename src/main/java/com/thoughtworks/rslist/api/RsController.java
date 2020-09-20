@@ -12,7 +12,9 @@ import com.thoughtworks.rslist.po.VotePo;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import com.thoughtworks.rslist.service.RsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,9 @@ public class RsController {
     UserRepository userRepository;
     @Autowired
     VoteRepository voteRepository;
+    @Autowired
+    RsService rsService;
+
 
 
     @GetMapping("/rs/{rsEventId}")
@@ -114,24 +119,8 @@ public class RsController {
     @PostMapping("/rs/vote/{rsEventId}")
     public ResponseEntity voteRsEvent(@PathVariable int rsEventId, @RequestBody Vote vote){
         vote.setRsEventId(rsEventId);
-        Optional<RsEventPo> rsEventPo = rsEventRepository.findById(vote.getRsEventId());
-        Optional<UserPo> userPo = userRepository.findById(vote.getUserId());
-        if (!rsEventPo.isPresent() || !userPo.isPresent() || vote.getVoteNum() > userPo.get().getVoteNum()) {
-            throw new RuntimeException();
-        }
 
-        VotePo votePo = VotePo.builder().localDateTime(vote.getTime())
-                .num(vote.getVoteNum())
-                .rsEventPo(rsEventPo.get())
-                .userPo(userPo.get())
-                .build();
-        voteRepository.save(votePo);
-        UserPo user = userPo.get();
-        user.setVoteNum(user.getVoteNum() - vote.getVoteNum());
-        userRepository.save(user);
-        RsEventPo rsEvent = rsEventPo.get();
-        rsEvent.setVoteNum(rsEvent.getVoteNum()+vote.getVoteNum());
-        rsEventRepository.save(rsEvent);
+        rsService.vote(vote);
         return ResponseEntity.ok().build();
 
     }
