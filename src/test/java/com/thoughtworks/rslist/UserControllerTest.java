@@ -102,6 +102,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @Order(6)
     public void should_throw_user_method_argument_not_valid_exception() throws Exception {
         User user = new User("xyxiaxxxxxx", "male", 19, "a@b.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -112,6 +113,7 @@ public class UserControllerTest {
 
     }
     @Test
+    @Order(7)
     public void should_register_user_by_id() throws Exception {
         User user = new User("idolice", "male", 19, "a@b.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -126,6 +128,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @Order(8)
     public void should_delete_user_by_id() throws Exception {
         User user = new User("idolice", "male", 19, "a@b.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
